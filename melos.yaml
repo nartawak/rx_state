@@ -1,0 +1,29 @@
+name: rx_state
+
+packages:
+  - packages/**
+  - examples/**
+
+scripts:
+  analyze:
+    run: |
+      melos exec -c 1 -- \
+        flutter analyze .
+    description: Run `dart analyze`
+  test:
+    run: melos run test:dart --no-select && melos run test:flutter --no-select
+    description: Run all Dart & Flutter tests
+
+  test:dart:
+    run: melos exec  -c 1 --fail-fast -- "\$MELOS_ROOT_PATH/scripts/coverage.sh"
+    description: Run Dart tests for a specific package in this project.
+    select-package:
+      flutter: false
+      dir-exists: test
+
+  test:flutter:
+    run: melos exec --dir-exists="test" -c 1 --fail-fast -- "flutter test --coverage"
+    description: Run Flutter tests for a specific package in this project.
+    select-package:
+      flutter: true
+      dir-exists: test
