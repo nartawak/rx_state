@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_punk_api/global_variables.dart';
+import 'package:flutter_punk_api/punk_beers/rx_state/punk_beers_module.dart';
 
 import './widgets/punkapi_card.dart';
-import '../../models/beer.dart';
-import '../../repositories/beer_repository.dart';
 import '../detail/detail_route.dart';
 
-class MasterRoute extends StatelessWidget {
-  const MasterRoute({required this.beersRepository});
+class MasterRoute extends StatefulWidget {
+  const MasterRoute();
 
   static const routeName = '/';
 
-  final BeersRepository beersRepository;
+  @override
+  _MasterRouteState createState() => _MasterRouteState();
+}
 
+class _MasterRouteState extends State<MasterRoute> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -42,31 +45,31 @@ class MasterRoute extends StatelessWidget {
         backgroundColor: theme.primaryColor,
         centerTitle: true,
       ),
-      body: FutureBuilder(
-        future: beersRepository.getBeers(itemsPerPage: 80),
+      body: StreamBuilder(
+        stream: kRxState.selectState<PunkBeersModule, PunkBeersState>(),
         builder: (_, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text('An error occurred'),
+          final state = snapshot.requireData! as PunkBeersState;
+
+          if (state.errorMessage != null) {
+            return Center(
+              child: Text(state.errorMessage!),
             );
           }
 
-          if (!snapshot.hasData) {
+          if (state.isLoading || (!state.isLoaded && !state.isLoading)) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
 
-          final beers = snapshot.data! as List<Beer>;
-
           return ListView.builder(
-            itemCount: beers.length,
+            itemCount: state.beers.length,
             itemBuilder: (_, index) {
               return Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 child: PunkApiCard(
-                  beer: beers[index],
-                  onBeerSelected: (Beer selectedBeer) {
+                  beer: state.beers[index],
+                  onBeerSelected: (selectedBeer) {
                     Navigator.pushNamed(
                       context,
                       DetailRoute.routeName,
@@ -80,5 +83,11 @@ class MasterRoute extends StatelessWidget {
         },
       ),
     );
+  }
+
+  @override
+  void initState() {
+    kRxState.dispatch(FetchBeersAction());
+    super.initState();
   }
 }

@@ -24,11 +24,14 @@ class RxState {
   Future<void> init() async {
     _actionSubscription = _actions$.stream.doOnData((action) async {
       await Future.wait(_modules.map((e) => e.mapActionToState(action)));
-    }).listen((event) {
-      // TODO: Manage error
-      // ignore: avoid_print
-      print(event.name);
-    });
+    }).doOnData((action) async {
+      final actionType = action.runtimeType;
+      for (final module in _modules) {
+        if (module.effects.containsKey(actionType)) {
+          await _actions$.addStream(module.effects[actionType]!.call(action));
+        }
+      }
+    }).listen((_) {});
 
     dispatch(RxStateInitializedAction());
   }

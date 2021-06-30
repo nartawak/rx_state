@@ -39,6 +39,8 @@ abstract class Module<T> {
   /// [reducer] function will call only for authorized actions
   List<Type> get authorizedActions;
 
+  Map<Type, Stream<Action> Function(Action action)> get effects;
+
   /// If [Action] type is contained in the [authorizedActions],
   /// [reducer] function is called and the new state is adding to the state stream
   Future<void> mapActionToState(Action action) async {

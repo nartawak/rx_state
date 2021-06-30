@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 
-import '../exceptions/custom_exceptions.dart';
-import '../models/beer.dart';
+import '../../exceptions/custom_exceptions.dart';
+import '../../models/beer.dart';
 
 const kBeerResource = 'beers';
 

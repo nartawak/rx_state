@@ -1,12 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'punkapi_theme.dart';
-import 'repositories/beer_repository.dart';
 import 'routes/detail/detail_route.dart';
 import 'routes/master/master_route.dart';
-
-const kApiBaseUrl = 'https://api.punkapi.com/v2';
 
 class PunkApiApp extends StatelessWidget {
   @override
@@ -17,11 +13,7 @@ class PunkApiApp extends StatelessWidget {
       darkTheme: darkTheme,
       initialRoute: MasterRoute.routeName,
       routes: <String, WidgetBuilder>{
-        MasterRoute.routeName: (_) => MasterRoute(
-              beersRepository: BeersRepository(
-                client: Dio(BaseOptions(baseUrl: kApiBaseUrl)),
-              ),
-            ),
+        MasterRoute.routeName: (_) => const MasterRoute(),
         DetailRoute.routeName: (_) => DetailRoute(),
       },
     );
