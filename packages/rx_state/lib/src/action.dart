@@ -2,6 +2,9 @@ import 'rx_state.dart';
 
 /// [Action]
 abstract class Action {
+  /// Create an [Action]
+  const Action();
+
   /// Define action name that will be used to identify an action
   String get name;
 }

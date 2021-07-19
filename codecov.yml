@@ -15,8 +15,6 @@ parsers:
       macro: no
 
 ignore:
-  - "**/example/"
-  - "examples"
   - "**/*.g.dart"
 
 comment:

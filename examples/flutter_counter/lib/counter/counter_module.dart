@@ -16,4 +16,7 @@ class CounterModule extends Module<int> {
 
     return state;
   }
+
+  @override
+  Map<Type, Stream<Action> Function(Action action)> get effects => {};
 }
