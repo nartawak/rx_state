@@ -15,7 +15,7 @@ class RxState {
   /// List of functional [Module]
   final Set<Module> _modules;
 
-  final _actions$ = BehaviorSubject<Action>();
+  final _actions$ = BehaviorSubject<Action>.seeded(RxStateInitializedAction());
   late StreamSubscription<Action> _actionSubscription;
 
   /// Initialize [RxState]
@@ -23,17 +23,22 @@ class RxState {
   /// [Action] stream to call doOnAction of each module
   Future<void> init() async {
     _actionSubscription = _actions$.stream.doOnData((action) async {
-      await Future.wait(_modules.map((e) => e.mapActionToState(action)));
+      await Future.wait(
+        _modules.map(
+          (e) => e.mapActionToState(action),
+        ),
+      );
     }).doOnData((action) async {
       final actionType = action.runtimeType;
+
       for (final module in _modules) {
         if (module.effects.containsKey(actionType)) {
-          await _actions$.addStream(module.effects[actionType]!.call(action));
+          await _actions$.addStream(
+            module.effects[actionType]!.call(action),
+          );
         }
       }
     }).listen((_) {});
-
-    dispatch(RxStateInitializedAction());
   }
 
   /// Dispatch an [Action]
@@ -80,7 +85,7 @@ class RxState {
     await _actions$.close();
 
     for (final module in _modules) {
-      module.dispose();
+      await module.dispose();
     }
   }
 }

@@ -1,16 +1,17 @@
-import 'package:flutter_punk_api/punk_beers/repositories/beer_repository.dart';
 import 'package:rx_state/rx_state.dart';
 
 import '../../models/beer.dart';
+import '../../service_locator/service_locator_mixin.dart';
+import '../repositories/beer_repository.dart';
 
 part 'punk_beers_actions.dart';
 part 'punk_beers_state.dart';
 
-class PunkBeersModule extends Module<PunkBeersState> {
-  PunkBeersModule({required this.beersRepository})
-      : super(PunkBeersState.initial());
+class PunkBeersModule extends Module<PunkBeersState> with ServiceLocatorMixin {
+  PunkBeersModule() : super(PunkBeersState.initial());
 
-  final BeersRepository beersRepository;
+  late final BeersRepository beersRepository =
+      serviceLocator<BeersRepository>();
 
   @override
   List<Type> get authorizedActions => [
@@ -36,7 +37,19 @@ class PunkBeersModule extends Module<PunkBeersState> {
     return state;
   }
 
-  Stream<Action> _transformFetchBeersAction(Action _) async* {
+  @override
+  Map<Type, EffectCallback> get effects => {
+        FetchBeersAction: FetchBeersEffect(beersRepository),
+      };
+}
+
+class FetchBeersEffect extends Effect {
+  FetchBeersEffect(this.beersRepository);
+
+  final BeersRepository beersRepository;
+
+  @override
+  Stream<Action> call(Action action) async* {
     try {
       final beers = await beersRepository.getBeers(itemsPerPage: 80);
 
@@ -45,9 +58,4 @@ class PunkBeersModule extends Module<PunkBeersState> {
       yield FetchBeersErrorAction(message: e.toString());
     }
   }
-
-  @override
-  Map<Type, Stream<Action> Function(Action action)> get effects => {
-        FetchBeersAction: _transformFetchBeersAction,
-      };
 }

@@ -1,16 +1,15 @@
 import 'package:dio/dio.dart';
-import 'package:meta/meta.dart';
 
 import '../../exceptions/custom_exceptions.dart';
 import '../../models/beer.dart';
+import '../../service_locator/service_locator_mixin.dart';
 
 const kBeerResource = 'beers';
 
-@immutable
-class BeersRepository {
-  const BeersRepository({required this.client});
+class BeersRepository with ServiceLocatorMixin {
+  BeersRepository();
 
-  final Dio client;
+  late final Dio client = serviceLocator<Dio>();
 
   Future<List<Beer>> getBeers({
     int pageNumber = 1,

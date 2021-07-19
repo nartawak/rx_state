@@ -1,12 +1,6 @@
 part of 'punk_beers_module.dart';
 
 class PunkBeersState {
-  const PunkBeersState._(
-      {required this.isLoading,
-      required this.isLoaded,
-      required this.beers,
-      required this.errorMessage});
-
   PunkBeersState.initial()
       : isLoaded = false,
         isLoading = false,
@@ -19,17 +13,15 @@ class PunkBeersState {
         errorMessage = null,
         beers = const [];
 
-  PunkBeersState.isLoaded(List<Beer> fetchedBeers)
-      : beers = fetchedBeers,
-        isLoaded = true,
+  PunkBeersState.isLoaded(this.beers)
+      : isLoaded = true,
         isLoading = false,
         errorMessage = null;
 
-  PunkBeersState.error(String error)
+  PunkBeersState.error(this.errorMessage)
       : beers = const [],
         isLoaded = true,
-        isLoading = false,
-        errorMessage = error;
+        isLoading = false;
 
   final bool isLoading;
   final bool isLoaded;

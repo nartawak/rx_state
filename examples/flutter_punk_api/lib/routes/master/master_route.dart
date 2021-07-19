@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_punk_api/global_variables.dart';
-import 'package:flutter_punk_api/punk_beers/rx_state/punk_beers_module.dart';
+import 'package:rx_state/rx_state.dart';
 
-import './widgets/punkapi_card.dart';
+import '../../punk_beers/rx_state/punk_beers_module.dart';
+import '../../service_locator/service_locator_mixin.dart';
 import '../detail/detail_route.dart';
+import './widgets/punkapi_card.dart';
 
 class MasterRoute extends StatefulWidget {
   const MasterRoute();
@@ -14,7 +15,9 @@ class MasterRoute extends StatefulWidget {
   _MasterRouteState createState() => _MasterRouteState();
 }
 
-class _MasterRouteState extends State<MasterRoute> {
+class _MasterRouteState extends State<MasterRoute> with ServiceLocatorMixin {
+  late final RxState rxState = serviceLocator<RxState>();
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -46,8 +49,14 @@ class _MasterRouteState extends State<MasterRoute> {
         centerTitle: true,
       ),
       body: StreamBuilder(
-        stream: kRxState.selectState<PunkBeersModule, PunkBeersState>(),
+        stream: rxState.selectState<PunkBeersModule, PunkBeersState>(),
         builder: (_, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
           final state = snapshot.requireData! as PunkBeersState;
 
           if (state.errorMessage != null) {
@@ -87,7 +96,7 @@ class _MasterRouteState extends State<MasterRoute> {
 
   @override
   void initState() {
-    kRxState.dispatch(FetchBeersAction());
+    rxState.dispatch(FetchBeersAction());
     super.initState();
   }
 }

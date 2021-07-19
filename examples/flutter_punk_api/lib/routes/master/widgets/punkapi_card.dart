@@ -5,16 +5,16 @@ import '../../../models/beer.dart';
 typedef SelectedBeer = void Function(Beer beer);
 
 class PunkApiCard extends StatelessWidget {
-  static const gestureDetectorKey = Key('gestureDetectorKey');
-
-  final Beer beer;
-  final SelectedBeer? onBeerSelected;
-
   const PunkApiCard({
     Key? key,
     required this.beer,
     this.onBeerSelected,
   }) : super(key: key);
+
+  static const gestureDetectorKey = Key('gestureDetectorKey');
+
+  final Beer beer;
+  final SelectedBeer? onBeerSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +33,14 @@ class PunkApiCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: theme.shadowColor.withOpacity(0.4),
-              offset: const Offset(0.0, 1.0),
-              blurRadius: 6.0,
+              offset: const Offset(0, 1),
+              blurRadius: 6,
             ),
           ],
         ),
         child: Row(
           children: [
-            Container(
+            SizedBox(
               width: 100,
               child: Hero(
                 tag: beer.id,
